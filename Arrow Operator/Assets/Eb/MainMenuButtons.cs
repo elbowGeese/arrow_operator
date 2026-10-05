@@ -1,0 +1,112 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
+public class MainMenuButtons : MonoBehaviour
+{
+    private InputAction moveAction;
+    private InputAction selectAction;
+    public Button[] buttons;
+    public GameObject[] selectArrows;
+    private int currentHover = 1;
+    private Vector2 previousInputDir;
+
+    void Start()
+    {
+        moveAction = InputSystem.actions.FindAction("Move");
+        selectAction = InputSystem.actions.FindAction("Jump");
+
+        previousInputDir = Vector2.zero;
+        currentHover = 1;
+
+        UpdateHover();
+    }
+
+    void Update()
+    {
+        // movement input
+        // x = left, right
+        // y = up, down
+        Vector2 inputDir = moveAction.ReadValue<Vector2>();
+
+        if(previousInputDir.y == 0f)
+        {
+            if(inputDir.y > 0f)
+            {
+                // move up
+                currentHover = Mathf.Clamp(currentHover - 1, 0, buttons.Length - 1);
+                UpdateHover();
+            }
+
+            if(inputDir.y < 0f)
+            {
+                // move down
+                currentHover = Mathf.Clamp(currentHover + 1, 0, buttons.Length - 1);
+                UpdateHover();
+            }
+        }
+
+        previousInputDir = inputDir;
+
+        // selection input
+        if (selectAction.WasPressedThisFrame())
+        {
+            Select();
+        }
+    }
+
+    private void UpdateHover()
+    {
+        foreach(GameObject arrow in selectArrows)
+        {
+            arrow.SetActive(false);
+        }
+
+        selectArrows[currentHover].SetActive(true);
+    }
+
+    private void Select()
+    {
+        switch (currentHover)
+        {
+            case 0:
+                PlayButton(); break;
+            case 1:
+                HowToButton(); break;
+            case 2:
+                LeaderboardButton(); break;
+            case 3:
+                CreditsButton(); break;
+            case 4:
+                QuitButton(); break;
+            default:
+                Debug.Log("Tried to select a button that doesn't exist."); break;
+        }
+    }
+
+    public void PlayButton()
+    {
+        Debug.Log("PLAY");
+    }
+
+    public void HowToButton()
+    {
+        Debug.Log("HOW TO");
+    }
+
+    public void LeaderboardButton()
+    {
+        Debug.Log("LEADERBOARD");
+    }
+
+    public void CreditsButton()
+    {
+        Debug.Log("CREDITS");
+    }
+
+    public void QuitButton()
+    {
+        Debug.Log("QUIT");
+        Application.Quit();
+    }
+}
