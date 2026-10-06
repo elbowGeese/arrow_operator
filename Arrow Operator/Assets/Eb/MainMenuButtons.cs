@@ -11,6 +11,8 @@ public class MainMenuButtons : MonoBehaviour
     private int currentHover = 1;
     private Vector2 previousInputDir;
 
+    public GameObject howToMenu, leaderboardMenu, creditsMenu;
+
     void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
@@ -20,6 +22,7 @@ public class MainMenuButtons : MonoBehaviour
         currentHover = 1;
 
         UpdateHover();
+        HowToButton();
     }
 
     void Update()
@@ -92,16 +95,28 @@ public class MainMenuButtons : MonoBehaviour
     public void HowToButton()
     {
         Debug.Log("HOW TO");
+        howToMenu.SetActive(true);
+
+        leaderboardMenu.SetActive(false);
+        creditsMenu.SetActive(false);
     }
 
     public void LeaderboardButton()
     {
         Debug.Log("LEADERBOARD");
+        leaderboardMenu.SetActive(true);
+
+        howToMenu.SetActive(false);
+        creditsMenu.SetActive(false);
     }
 
     public void CreditsButton()
     {
         Debug.Log("CREDITS");
+        creditsMenu.SetActive(true);
+
+        leaderboardMenu.SetActive(false);
+        howToMenu.SetActive(false);
     }
 
     public void QuitButton()
