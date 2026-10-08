@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 玩家操控的箭。箭沿自身朝向（默认 +Z）自动匀速向前飞行。
-/// W 向上，S 向下，A 向左，D 向右，使用 Rigidbody 与墙壁、地面碰撞。
+/// 玩家操控的箭。
+/// 按住空格键向前飞行，松开后不再前进。
+/// 方向键上下控制上升和下降，左右控制向左和向右，使用 Rigidbody 与墙壁、地面碰撞。
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class ArrowController : MonoBehaviour
 {
-    [Tooltip("自动向前飞行的速度")]
+    [Tooltip("按住空格时向前飞行的速度")]
     public float forwardSpeed = 10f;
     [Tooltip("上下左右移动的速度")]
     public float steerSpeed = 8f;
@@ -17,6 +18,7 @@ public class ArrowController : MonoBehaviour
 
     Rigidbody body;
     Vector2 steerInput;
+    bool forwardHeld;
 
     void Awake()
     {
@@ -44,22 +46,25 @@ public class ArrowController : MonoBehaviour
         if (keyboard == null || Time.timeScale == 0f)
         {
             steerInput = Vector2.zero;
+            forwardHeld = false;
             return;
         }
 
         float x = 0f;
         float y = 0f;
-        if (keyboard.aKey.isPressed) x -= 1f;
-        if (keyboard.dKey.isPressed) x += 1f;
-        if (keyboard.wKey.isPressed) y += 1f;
-        if (keyboard.sKey.isPressed) y -= 1f;
+        if (keyboard.leftArrowKey.isPressed) x -= 1f;
+        if (keyboard.rightArrowKey.isPressed) x += 1f;
+        if (keyboard.upArrowKey.isPressed) y += 1f;
+        if (keyboard.downArrowKey.isPressed) y -= 1f;
 
         steerInput = Vector2.ClampMagnitude(new Vector2(x, y), 1f);
+        forwardHeld = keyboard.spaceKey.isPressed;
     }
 
     void FixedUpdate()
     {
-        Vector3 localVelocity = new Vector3(steerInput.x * steerSpeed, steerInput.y * steerSpeed, forwardSpeed);
+        float forward = forwardHeld ? forwardSpeed : 0f;
+        Vector3 localVelocity = new Vector3(steerInput.x * steerSpeed, steerInput.y * steerSpeed, forward);
         Vector3 target = transform.TransformDirection(localVelocity);
         body.linearVelocity = Vector3.MoveTowards(body.linearVelocity, target, acceleration * Time.fixedDeltaTime);
     }
