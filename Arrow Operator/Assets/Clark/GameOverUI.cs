@@ -1,12 +1,12 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameOverUI : MonoBehaviour
 {
     public ScoreManager scoreManager;
     public TMP_Text finalScoreText;
     public TMP_InputField nameInput;
-    public GameObject leaderboardPanel;
 
     bool submitted;
 
@@ -30,9 +30,6 @@ public class GameOverUI : MonoBehaviour
 
         Leaderboard.AddToLeaderboard(playerName, scoreManager.score);
 
-        if (leaderboardPanel != null)
-            leaderboardPanel.SetActive(true);
-
-        gameObject.SetActive(false);
+        SceneManager.LoadScene(0);
     }
 }

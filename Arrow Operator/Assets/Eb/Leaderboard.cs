@@ -32,19 +32,27 @@ public static class Leaderboard
 
         // add new score to existing data
         bool inserted = false;
-        for (int i = 0; i < leaderWrapped.entries.Count; i++)
+        if (leaderWrapped != null)
         {
-            // check if new score is bigger
-            if (CompareScores(new_score, leaderWrapped.entries[i].score))
+            for (int i = 0; i < leaderWrapped.entries.Count; i++)
             {
-                leaderWrapped.entries.Insert(i, new LeaderEntry() { name = new_name, score = new_score });
-                inserted = true;
-                break;
+                // check if new score is bigger
+                if (CompareScores(new_score, leaderWrapped.entries[i].score))
+                {
+                    leaderWrapped.entries.Insert(i, new LeaderEntry() { name = new_name, score = new_score });
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted)
+            {
+                leaderWrapped.entries.Add(new LeaderEntry() { name = new_name, score = new_score });
             }
         }
-
-        if (!inserted)
+        else
         {
+            leaderWrapped = new LeaderWrapper();
+            leaderWrapped.entries = new List<LeaderEntry>();
             leaderWrapped.entries.Add(new LeaderEntry() { name = new_name, score = new_score });
         }
 
