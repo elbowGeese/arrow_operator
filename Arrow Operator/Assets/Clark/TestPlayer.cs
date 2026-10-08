@@ -4,11 +4,6 @@ using UnityEngine.InputSystem;
 public class TestPlayer : MonoBehaviour
 {
     public float speed = 5;
-    [Tooltip("Enable for the flute demo. Space represents the Makey Makey breath contact.")]
-    public bool requireBreath;
-    ArrowOperator.Jeff.MovementAidController movementAids;
-
-    void Awake() => movementAids = GetComponent<ArrowOperator.Jeff.MovementAidController>();
 
     void Update()
     {
@@ -30,10 +25,6 @@ public class TestPlayer : MonoBehaviour
             y -= 1;
 
         Vector3 move = new Vector3(x, y, 0).normalized;
-        if (requireBreath && !keyboard.spaceKey.isPressed) move = Vector3.zero;
-        Vector3 velocity = move * speed;
-        if (movementAids != null && movementAids.isActiveAndEnabled)
-            velocity = movementAids.ModifyVelocity(velocity);
-        transform.position += velocity * Time.deltaTime;
+        transform.position += move * speed * Time.deltaTime;
     }
 }

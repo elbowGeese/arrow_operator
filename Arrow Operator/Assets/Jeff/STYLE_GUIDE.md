@@ -9,7 +9,7 @@ Everything below is a proposed implementation of that direction for team review.
 | Environment | `#18263A` | Simple grid and large planar surfaces |
 | Player / main text | `#EAF4FF` | High-contrast light silhouette |
 | Speed pickup | `#43E5E0` | Cube; SPEED label and countdown |
-| Direction pickup | `#63A7FF` | Diamond; explicit direction label (+X in demo) |
+| Direction pickup | `#63A7FF` | Diamond; explicit direction label (+Z in 3D demo) |
 | Shield pickup / active player | `#B39AFF` | Orb; SHIELD countdown |
 | Time pickup | `#FFD166` | Short cylinder; +10s label |
 | Hazard | `#FF6473` | Solid wall with clearly readable boundary |

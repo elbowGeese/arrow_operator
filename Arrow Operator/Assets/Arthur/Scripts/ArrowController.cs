@@ -1,66 +1,78 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using ArrowOperator.Jeff;
 
-/// <summary>
-/// 玩家操控的箭。箭沿自身朝向（默认 +Z）自动匀速向前飞行。
-/// W 向上，S 向下，A 向左，D 向右，使用 Rigidbody 与墙壁、地面碰撞。
-/// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class ArrowController : MonoBehaviour
 {
-    [Tooltip("自动向前飞行的速度")]
     public float forwardSpeed = 10f;
-    [Tooltip("上下左右移动的速度")]
     public float steerSpeed = 8f;
-    [Tooltip("加速和减速的快慢，数值越大响应越快")]
     public float acceleration = 30f;
-
+    [Tooltip("Keep disabled for existing automatic-flight scenes. Space simulates breath when enabled.")]
+    public bool requireBreath;
+    public bool useKeyboardInput = true;
     Rigidbody body;
+    ArrowPowerups powerups;
+    PhysicsMaterial slippery;
     Vector2 steerInput;
+    bool breathing;
 
     void Awake()
     {
         body = GetComponent<Rigidbody>();
+        powerups = GetComponent<ArrowPowerups>();
         body.useGravity = false;
         body.isKinematic = false;
         body.freezeRotation = true;
         body.interpolation = RigidbodyInterpolation.Interpolate;
         body.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-        // 零摩擦，贴着墙壁和地面时仍能顺畅滑动
-        var slippery = new PhysicsMaterial("ArrowSlippery")
+        slippery = new PhysicsMaterial("ArrowSlippery")
         {
             dynamicFriction = 0f,
             staticFriction = 0f,
             frictionCombine = PhysicsMaterialCombine.Minimum
         };
-        foreach (Collider c in GetComponentsInChildren<Collider>())
-            c.sharedMaterial = slippery;
+        foreach (Collider collider in GetComponentsInChildren<Collider>()) collider.sharedMaterial = slippery;
+    }
+
+    // A hardware adapter can disable keyboard input and supply steering and breath here.
+    public void SetInput(Vector2 steering, bool breath)
+    {
+        steerInput = Vector2.ClampMagnitude(steering, 1f);
+        breathing = breath;
     }
 
     void Update()
     {
+        if (!useKeyboardInput) return;
         Keyboard keyboard = Keyboard.current;
-        if (keyboard == null || Time.timeScale == 0f)
-        {
-            steerInput = Vector2.zero;
-            return;
-        }
-
-        float x = 0f;
-        float y = 0f;
-        if (keyboard.aKey.isPressed) x -= 1f;
-        if (keyboard.dKey.isPressed) x += 1f;
-        if (keyboard.wKey.isPressed) y += 1f;
-        if (keyboard.sKey.isPressed) y -= 1f;
-
-        steerInput = Vector2.ClampMagnitude(new Vector2(x, y), 1f);
+        if (keyboard == null) { SetInput(Vector2.zero, false); return; }
+        float x = (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed ? 1f : 0f)
+            - (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed ? 1f : 0f);
+        float y = (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed ? 1f : 0f)
+            - (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed ? 1f : 0f);
+        SetInput(new Vector2(x, y), keyboard.spaceKey.isPressed);
     }
 
     void FixedUpdate()
     {
-        Vector3 localVelocity = new Vector3(steerInput.x * steerSpeed, steerInput.y * steerSpeed, forwardSpeed);
-        Vector3 target = transform.TransformDirection(localVelocity);
+        if (requireBreath && !breathing)
+        {
+            body.linearVelocity = Vector3.zero;
+            if (powerups != null) powerups.ModifyVelocity(Vector3.zero);
+            return;
+        }
+        Vector3 target = transform.TransformDirection(new Vector3(steerInput.x * steerSpeed, steerInput.y * steerSpeed, forwardSpeed));
+        if (powerups != null) target = powerups.ModifyVelocity(target);
         body.linearVelocity = Vector3.MoveTowards(body.linearVelocity, target, acceleration * Time.fixedDeltaTime);
     }
+
+    void OnDisable()
+    {
+        if (body != null && !body.isKinematic) body.linearVelocity = Vector3.zero;
+        steerInput = Vector2.zero;
+        breathing = false;
+    }
+
+    void OnDestroy() { if (slippery != null) Destroy(slippery); }
 }
