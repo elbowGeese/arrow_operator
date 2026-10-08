@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MainMenuButtons : MonoBehaviour
 {
@@ -94,6 +95,7 @@ public class MainMenuButtons : MonoBehaviour
     public void PlayButton()
     {
         Debug.Log("PLAY");
+        SceneManager.LoadScene(1);
     }
 
     public void HowToButton()
