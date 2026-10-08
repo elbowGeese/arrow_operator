@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -12,6 +14,8 @@ public class MainMenuButtons : MonoBehaviour
     private Vector2 previousInputDir;
 
     public GameObject howToMenu, leaderboardMenu, creditsMenu;
+
+    public Transform[] leaderboardEntries;
 
     void Start()
     {
@@ -108,6 +112,9 @@ public class MainMenuButtons : MonoBehaviour
 
         howToMenu.SetActive(false);
         creditsMenu.SetActive(false);
+
+        // set up leaderboard
+        SetupLeaderboard();
     }
 
     public void CreditsButton()
@@ -123,5 +130,25 @@ public class MainMenuButtons : MonoBehaviour
     {
         Debug.Log("QUIT");
         Application.Quit();
+    }
+
+    private void SetupLeaderboard()
+    {
+        List<LeaderEntry> topSix = Leaderboard.GetTopSixEntries();
+        for(int i = 0; i < 6; i++)
+        {
+            TMP_Text name = leaderboardEntries[i].GetChild(1).GetComponent<TMP_Text>();
+            TMP_Text score = leaderboardEntries[i].GetChild(2).GetComponent<TMP_Text>();
+            if (topSix.Count > i)
+            {
+                name.text = topSix[i].name;
+                score.text = topSix[i].score.ToString();
+            }
+            else
+            {
+                name.text = "---";
+                score.text = "---";
+            }
+        }
     }
 }
