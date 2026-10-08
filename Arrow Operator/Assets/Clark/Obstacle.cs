@@ -31,8 +31,22 @@ public class Obstacle : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        HandlePlayerContact(other);
+    }
+
+    // Recheck overlapping players so an expired shield cannot leave them invulnerable.
+    void OnTriggerStay(Collider other)
+    {
+        HandlePlayerContact(other);
+    }
+
+    void HandlePlayerContact(Collider other)
+    {
         if (hit || Time.timeScale == 0) return;
         if (!other.CompareTag("Player")) return;
+
+        var aids = other.GetComponentInParent<ArrowOperator.Jeff.MovementAidController>();
+        if (aids != null && aids.TryProtect(GetComponent<Collider>())) return;
 
         hit = true;
         Destroy(other.gameObject);

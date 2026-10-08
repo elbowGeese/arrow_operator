@@ -9,6 +9,17 @@ public class CountdownTimer : MonoBehaviour
 
     bool running = true;
 
+    public bool IsRunning => running && time > 0;
+
+    public bool TryAddTime(float seconds)
+    {
+        if (!IsRunning || Time.timeScale <= 0 || float.IsNaN(seconds) || float.IsInfinity(seconds) || seconds <= 0)
+            return false;
+        time = Mathf.Min(time + seconds, 3600f);
+        ShowTime();
+        return true;
+    }
+
     void Start()
     {
         Time.timeScale = 1;
