@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7553788839618300527}
   - component: {fileID: 7866585765255956943}
   - component: {fileID: 366888854644287446}
+  - component: {fileID: 8551822024663493351}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -97,6 +98,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   killerTag: Player
+--- !u!114 &8551822024663493351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099407196902228690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56e99a0e6e842fa4dbbf53fb64fb0e31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Target
+  moving: 0
+  moveRange: 0.5
+  moveSpeed: 1
+  scoreManager: {fileID: 0}
 --- !u!1 &2858339758135379995
 GameObject:
   m_ObjectHideFlags: 0

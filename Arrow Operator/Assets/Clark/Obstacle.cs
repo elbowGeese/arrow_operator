@@ -5,7 +5,6 @@ public class Obstacle : MonoBehaviour
     public bool moving;
     public float moveRange = 0.5f;
     public float moveSpeed = 1;
-    public GameObject gameOverPanel;
 
     Vector3 startPos;
     float moveTime;
@@ -29,16 +28,15 @@ public class Obstacle : MonoBehaviour
         transform.position = startPos + new Vector3(x, y, 0);
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision other)
     {
         if (hit || Time.timeScale == 0) return;
-        if (!other.CompareTag("Player")) return;
+        if (!other.gameObject.CompareTag("Player")) return;
 
         hit = true;
-        Destroy(other.gameObject);
+        //Destroy(other.gameObject);
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
+        GameObject.FindWithTag("GameOverPanel").transform.GetChild(0).gameObject.SetActive(true);
 
         Time.timeScale = 0;
     }

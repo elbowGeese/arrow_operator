@@ -32,12 +32,11 @@ public class Target : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (hit || Time.timeScale == 0) return;
-        if (!other.CompareTag("Player")) return;
+        if (!other.gameObject.CompareTag("Player")) return;
 
         hit = true;
 
-        if (scoreManager != null)
-            scoreManager.AddScore();
+        FindAnyObjectByType<ScoreManager>().AddScore();
 
         Destroy(gameObject);
     }
